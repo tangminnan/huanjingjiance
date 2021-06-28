@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="hjjc-manager:war">
-    <output-path>$PROJECT_DIR$/hjjc-manager/target</output-path>
-    <root id="archive" name="hjjc-manager-1.6.9.war">
-      <element id="artifact" artifact-name="hjjc-manager:war exploded" />
-    </root>
-  </artifact>
-</component>
