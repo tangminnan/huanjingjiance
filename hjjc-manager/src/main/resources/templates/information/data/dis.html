@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head th:include="include :: header"></head>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>欢迎页</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <style>
+        .main{
+            height: 900px;
+            margin-top: 10px;
+            border: 1px solid #fef1ec;
+            margin-top: 32px;
+        }
+        .ech{
+            width: 33%;
+            height: 33%;
+            border-bottom: 1px solid #0a6aa1;
+            background-color: #fef1ec;
+            display: inline-block;
+        }
+        .echi{
+            height: 90%;
+            width: 100%;
+        }
+    </style>
+
+
+</head>
+<body>
+<div class="wrapper wrapper-content ">
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-body">
+                <div class="fixed-table-toolbar">
+                    <div class="columns pull-left">
+                      <span style="color: #0a6aa1;font-size: x-large;" th:text="${ownerUserDO.school+''+ownerUserDO.grade+''+ownerUserDO.clas}+'  环境检测数据'"></span>
+                      <input type="hidden" th:value="${ownerUserDO.id}" id="userId">
+                    </div>
+                    <div class="columns pull-right">
+                        <button class="btn btn-success" onclick="getEcharsData()">查询</button>
+                    </div>
+                    <div class="columns pull-right col-md-2 nopadding">
+                        <input id="endTime" type="text" class="form-control"
+                               placeholder="结束时间">
+                    </div>
+                    <div class="columns pull-right col-md-2 nopadding">
+                        <input id="startTime" type="text" class="form-control"
+                               placeholder="开始时间">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                <div class="main">
+                        <div class="ech" th:each="device:${deviceDOS}">
+                            <span th:text="${'设备'+device.type+'   '+device.identity}"></span>
+                            <div class="echi" th:id="${device.identity}">
+                            </div>
+                        </div>
+                </div>
+<div th:include="include :: footer"></div>
+ <script th:inline="javascript">
+         laydate.render({
+             elem: '#startTime',
+             type: 'datetime',
+         });
+         laydate.render({
+             elem: '#endTime',
+             type: 'datetime',
+         });
+
+         var device = [[${deviceDOS}]];
+         if(device.length==0){
+            alert("教室没有安装环境检测设备");
+         }else{
+             getEcharsData(1,device);
+         }
+         function getEcharsData(flag){
+             let userId=$("#userId").val();
+             let startTime=$("#startTime").val();
+             let endTime=$("#endTime").val();
+             if(flag==0 && startTime==""){
+                 alert("开始时间不能为空");
+                 return;
+             }
+             if(flag==0 && endTime==""){
+                 alert("结束时间不可为空");
+                 return;
+             }
+             if(flag==0 && startTime>endTime){
+                 alert("开始时间不能大于结束时间");
+                 return;
+             }
+            $.ajax({
+                url:'/information/data/getEcharsData',
+                data:{userId,startTime,endTime},
+                mathod:'GET',
+                success: res=>{
+                    console.info(res);
+                    let subMap  =res.subMap || {};
+                    for(let i=0,length=device.length;i<length;i++){
+                        let id=device[i].identity;
+                        let eat = echarts.init(document.getElementById(id));
+                        let series=[];
+                        let da=[];
+                        if(device[i].type=="LU"){
+                            let key="lux"+id;
+                            series.push({
+                                name: '光照强度lux',
+                                type: 'line',
+                                data: subMap[key] || []
+                            });
+                            da.push("光照强度lux")
+                        }
+                        if(device[i].type=="T&H"){
+                            let key="temp"+id;
+                            series.push({
+                                name: '温度℃',
+                                type: 'line',
+                                data: subMap[key] || []
+                            });
+                            key="humidity"+id;
+                            series.push({
+                                name: '湿度%',
+                                type: 'line',
+                                data: subMap[key] || []
+                            });
+                            da.push("温度℃","湿度%")
+                        }
+                        let option = {
+                            legend: {
+                                data: da
+                            },
+                            dataZoom: {show: true,realtime: true,start: 20,end: 80},
+                            xAxis: {
+                                type: 'category',
+
+                                data: res.next
+                            },
+                            yAxis: {
+                                type: 'value'
+                            },
+                        series:series
+                        };
+                        eat.setOption(option);
+                    }
+                }
+            })
+         }
+         $(".ech").dblclick(function(){
+            let identity=$(this).children(".echi").attr("id");
+            let startTime=$("#startTime").val();
+            let endTime=$("#endTime").val();
+            window.location.href="/information/data?identity="+identity+"&startTime="+startTime+"&endTime="+endTime;
+         });
+    </script>
+</body>
+</html>

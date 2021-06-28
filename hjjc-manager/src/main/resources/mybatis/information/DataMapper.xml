@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hjjc.information.dao.DataDao">
+
+	<select id="get" resultType="com.hjjc.information.domain.DataDO">
+		select `id`,init_id,stat,did,`user_id`,`gid`,`type`,`lumen`,`temp`,`humidity`,`longitude`,`latitude`,`rssi`,`sn`,`voltage`,`st`,`add_time` from t_data where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.hjjc.information.domain.DataDO">
+		select data.`id`,data.init_id,data.`user_id`,data.stat,data.did,data.`gid`,data.`type`,data.`lumen`,data.`temp`,data.`humidity`,data.`longitude`,
+		data.`latitude`,data.`rssi`,data.`sn`,data.`voltage`,data.`st`,data.`add_time`,sc.province,sc.city,sc.area,sc.school,u.grade,u.clas from t_data data,t_user u,t_school sc
+        <where>  
+		  		  <if test="id != null and id != ''"> and data.id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and data.user_id = #{userId} </if>
+		  		  <if test="gid != null and gid != ''"> and data.gid = #{gid} </if>
+			      <if test="did != null and did != ''"> and data.did = #{did} </if>
+		  		  <if test="lumen != null and lumen != ''"> and data.lumen = #{lumen} </if>
+		  		  <if test="temp != null and temp != ''"> and data.temp = #{temp} </if>
+		  		  <if test="humidity != null and humidity != ''"> and data.humidity = #{humidity} </if>
+		  		  <if test="longitude != null and longitude != ''"> and data.longitude = #{longitude} </if>
+		  		  <if test="latitude != null and latitude != ''"> and data.latitude = #{latitude} </if>
+		  		  <if test="rssi != null and rssi != ''"> and data.rssi = #{rssi} </if>
+		  		  <if test="sn != null and sn != ''"> and data.sn = #{sn} </if>
+			      <if test="addTime != null and addTime != ''"> and DATE_FORMAT(data.add_time,'%Y-%m-%d')  = #{addTime} </if>
+			      <if test="initId != null and initId != ''"> and data.init_id = #{initId} </if>
+			<if test="startTime != null and startTime!=''"> and data.add_time &gt;= #{startTime} </if>
+			<if test="endTime != null and endTime!=''"> and data.add_time &lt;= #{endTime} </if>
+			<if test="schoolID != null and schoolID!=''"> and u.school = #{schoolID} </if>
+			and data.user_id=u.id and u.school=sc.id
+		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_data data,t_user u,t_school sc
+		 <where>
+			 <if test="id != null and id != ''"> and data.id = #{id} </if>
+			 <if test="userId != null and userId != ''"> and data.user_id = #{userId} </if>
+			 <if test="gid != null and gid != ''"> and data.gid = #{gid} </if>
+			 <if test="did != null and did != ''"> and data.did = #{did} </if>
+			 <if test="lumen != null and lumen != ''"> and data.lumen = #{lumen} </if>
+			 <if test="temp != null and temp != ''"> and data.temp = #{temp} </if>
+			 <if test="humidity != null and humidity != ''"> and data.humidity = #{humidity} </if>
+			 <if test="longitude != null and longitude != ''"> and data.longitude = #{longitude} </if>
+			 <if test="latitude != null and latitude != ''"> and data.latitude = #{latitude} </if>
+			 <if test="rssi != null and rssi != ''"> and data.rssi = #{rssi} </if>
+			 <if test="sn != null and sn != ''"> and data.sn = #{sn} </if>
+			 <if test="addTime != null and addTime != ''"> and DATE_FORMAT(data.add_time,'%Y-%m-%d')  = #{addTime} </if>
+			 <if test="initId != null and initId != ''"> and data.init_id = #{initId} </if>
+			 <if test="startTime != null and startTime!=''"> and data.add_time &gt;= #{startTime} </if>
+			 <if test="endTime != null and endTime!=''"> and data.add_time &lt;= #{endTime} </if>
+			 <if test="schoolID != null and schoolID!=''"> and u.school = #{schoolID} </if>
+			 and data.user_id=u.id and u.school=sc.id
+		 </where>
+	</select>
+	 
+	<insert id="save" parameterType="com.hjjc.information.domain.DataDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_data
+		(
+			`user_id`, 
+			`gid`, 
+			`type`, 
+			`lumen`, 
+			`temp`, 
+			`humidity`, 
+			`longitude`, 
+			`latitude`, 
+			`rssi`, 
+			`sn`, 
+			`voltage`, 
+			`st`, 
+			`add_time`,
+			stat,
+			did,
+			init_id
+		)
+		values
+		(
+			#{userId}, 
+			#{gid}, 
+			#{type}, 
+			#{lumen}, 
+			#{temp}, 
+			#{humidity}, 
+			#{longitude}, 
+			#{latitude}, 
+			#{rssi}, 
+			#{sn}, 
+			#{voltage}, 
+			#{st}, 
+			#{addTime},
+			#{stat},
+			#{did},
+			#{initId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.hjjc.information.domain.DataDO">
+		update t_data 
+		<set>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="gid != null">`gid` = #{gid}, </if>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="lumen != null">`lumen` = #{lumen}, </if>
+			<if test="temp != null">`temp` = #{temp}, </if>
+			<if test="humidity != null">`humidity` = #{humidity}, </if>
+			<if test="longitude != null">`longitude` = #{longitude}, </if>
+			<if test="latitude != null">`latitude` = #{latitude}, </if>
+			<if test="rssi != null">`rssi` = #{rssi}, </if>
+			<if test="sn != null">`sn` = #{sn}, </if>
+			<if test="voltage != null">`voltage` = #{voltage}, </if>
+			<if test="st != null">`st` = #{st}, </if>
+			<if test="addTime != null and addTime != ''"> and DATE_FORMAT(add_time,'%Y-%m-%d')  = #{addTime} </if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_data where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_data where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left">
+							<button shiro:hasPermission="information:data:add" type="button" class="btn  btn-primary" onclick="add()">
+								<i class="fa fa-plus" aria-hidden="true"></i>添加
+							</button>
+							<button shiro:hasPermission="information:data:batchRemove" type="button" class="btn  btn-danger"
+								onclick="batchRemove()">
+								<i class="fa fa-trash" aria-hidden="true"></i>删除
+							</button>
+							<button type="button" class="btn  btn-primary" onclick="exportData()">数据导出</button>
+						</div>
+						<div class="columns pull-right">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="endTime" type="text" class="form-control"
+								   placeholder="结束时间" th:value="${endTime==null?'': #dates.format(endTime, 'yyyy-MM-dd HH:mm:ss')}">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="startTime" type="text" class="form-control"
+								placeholder="开始时间" th:value="${startTime==null?'':#dates.format(startTime, 'yyyy-MM-dd HH:mm:ss')}">
+						</div>
+						<!--<div class="columns pull-right col-md-2 nopadding">
+							<input id="userId" type="text" class="form-control"
+								   placeholder="用户ID" th:value="${userId}">
+						</div>-->
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="identity" type="text" class="form-control"
+								   placeholder="设备ID" th:value="${identity}">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select id="schoolID" name="schoolID" class="form-control" type="text">
+								<option value=""></option>
+								<option th:each="sc:${schoolDOS}" th:value="${sc.id}" th:text="${sc.province+''+sc.city+''+sc.area+''+sc.school}"></option>
+							</select>
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+					<input type="hidden" id="initId" th:value="${initId}">
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--shiro控制bootstraptable行内按钮看见性 来自bootdo的创新方案 -->
+		<div>
+			<script type="text/javascript">
+				var s_edit_h = 'hidden';
+				var s_remove_h = 'hidden';
+				var s_resetPwd_h = 'hidden';
+			</script>
+		</div>
+		<div shiro:hasPermission="information:data:edit">
+			<script type="text/javascript">
+				s_edit_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="information:data:remove">
+			<script type="text/javascript">
+				var s_remove_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="information:data:resetPwd">
+			<script type="text/javascript">
+				var s_resetPwd_h = '';
+			</script>
+		</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript" src="/js/appjs/information/data/data.js"></script>
+	<script type="text/javascript">
+        laydate.render({
+            elem: '#startTime',
+            type: 'datetime',
+        });
+        laydate.render({
+            elem: '#endTime',
+            type: 'datetime',
+        });
+	</script>
+</body>
+</html>

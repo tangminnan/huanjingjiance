@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hjjc.information.dao.OwnerUserDao">
+
+	<select id="get" resultType="com.hjjc.information.domain.OwnerUserDO">
+		select `id`,area,`register_time`,`country`,`province`,`city`,`school`,`grade`,`clas` from t_user where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.hjjc.information.domain.OwnerUserDO">
+		select us.`id`,us.`register_time`,sc.area,sc.`province`,sc.`city`,sc.`school` schoolName, us.`grade`,us.`clas` from t_user us,
+		 t_school sc
+        <where>  
+
+
+		  		  <if test="province != null and province != ''"> and us.province = #{province} </if>
+		  		  <if test="city != null and city != ''"> and sc.city = #{city} </if>
+		  		  <if test="school != null and school != ''"> and sc.school = #{school} </if>
+		  		  <if test="grade != null and grade != ''"> and us.grade = #{grade} </if>
+		  		  <if test="clas != null and clas != ''"> and us.clas = #{clas} </if>
+			      <if test="area != null and area != ''"> and sc.area = #{area} </if>
+			and us.school=sc.id
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_user us,
+		t_school sc
+		 <where>
+			 <if test="province != null and province != ''"> and us.province = #{province} </if>
+			 <if test="city != null and city != ''"> and sc.city = #{city} </if>
+			 <if test="school != null and school != ''"> and sc.school = #{school} </if>
+			 <if test="grade != null and grade != ''"> and us.grade = #{grade} </if>
+			 <if test="clas != null and clas != ''"> and us.clas = #{clas} </if>
+			 <if test="area != null and area != ''"> and sc.area = #{area} </if>
+
+			 and us.school=sc.id
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.hjjc.information.domain.OwnerUserDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_user
+		(
+			`register_time`, 
+			`country`, 
+			`province`, 
+			`city`, 
+			`school`, 
+			`grade`, 
+			`clas`,
+			 area
+		)
+		values
+		(
+			#{registerTime}, 
+			#{country}, 
+			#{province}, 
+			#{city}, 
+			#{school}, 
+			#{grade}, 
+			#{clas},
+			#{area}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.hjjc.information.domain.OwnerUserDO">
+		update t_user 
+		<set>
+			<if test="registerTime != null">`register_time` = #{registerTime}, </if>
+			<if test="country != null">`country` = #{country}, </if>
+			<if test="province != null">`province` = #{province}, </if>
+			<if test="city != null">`city` = #{city}, </if>
+			<if test="school != null">`school` = #{school}, </if>
+			<if test="grade != null">`grade` = #{grade}, </if>
+			<if test="clas != null">`clas` = #{clas},</if>
+			<if test="area != null">`area` = #{area}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_user where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_user where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

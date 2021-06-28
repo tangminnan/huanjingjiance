@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hjjc.information.dao.SchoolDao">
+
+	<select id="get" resultType="com.hjjc.information.domain.SchoolDO">
+		select `id`,`register_time`,`country`,`province`,`city`,`school`,`area` from t_school where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.hjjc.information.domain.SchoolDO">
+		select `id`,`register_time`,`country`,`province`,`city`,`school`,`area` from t_school
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="registerTime != null and registerTime != ''"> and register_time = #{registerTime} </if>
+		  		  <if test="country != null and country != ''"> and country = #{country} </if>
+		  		  <if test="province != null and province != ''"> and province = #{province} </if>
+		  		  <if test="city != null and city != ''"> and city = #{city} </if>
+		  		  <if test="school != null and school != ''"> and school = #{school} </if>
+		  		  <if test="area != null and area != ''"> and area = #{area} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_school
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="registerTime != null and registerTime != ''"> and register_time = #{registerTime} </if>
+		  		  <if test="country != null and country != ''"> and country = #{country} </if>
+		  		  <if test="province != null and province != ''"> and province = #{province} </if>
+		  		  <if test="city != null and city != ''"> and city = #{city} </if>
+		  		  <if test="school != null and school != ''"> and school = #{school} </if>
+		  		  <if test="area != null and area != ''"> and area = #{area} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.hjjc.information.domain.SchoolDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_school
+		(
+			`register_time`, 
+			`country`, 
+			`province`, 
+			`city`, 
+			`school`, 
+			`area`
+		)
+		values
+		(
+			#{registerTime}, 
+			#{country}, 
+			#{province}, 
+			#{city}, 
+			#{school}, 
+			#{area}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.hjjc.information.domain.SchoolDO">
+		update t_school 
+		<set>
+			<if test="registerTime != null">`register_time` = #{registerTime}, </if>
+			<if test="country != null">`country` = #{country}, </if>
+			<if test="province != null">`province` = #{province}, </if>
+			<if test="city != null">`city` = #{city}, </if>
+			<if test="school != null">`school` = #{school}, </if>
+			<if test="area != null">`area` = #{area}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_school where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_school where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>
