@@ -7,9 +7,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HandlesTypes;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
 @HandlesTypes({WebApplicationInitializer.class})
 public class SocketConfig implements WebApplicationInitializer{
     @Override

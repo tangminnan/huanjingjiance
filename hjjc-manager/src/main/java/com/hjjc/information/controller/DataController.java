@@ -85,7 +85,7 @@ public class DataController {
 		List<DeviceDO> deviceDOS = deviceService.list(daM);
 		if(deviceDOS.size()>0) {
 			String type = deviceDOS.get(0).getType();
-			if ("T&H".equals(type) || "LU".equals("type"))
+			if ("T&H".equals(type) || "LU".equals(type))
 				params.put("did", params.get("identity"));
 			else if ("WG".equals(type))
 				params.put("gid", params.get("identity"));
@@ -242,7 +242,14 @@ public class DataController {
 		Map<String,Object> paramsMap = new HashMap<>();
 		paramsMap.put("userId",userId);
 		List<DeviceDO> deviceDOS = deviceService.list(paramsMap);
+		Set<String> strings = new HashSet<>();
+		List<DataDO> dataDOS  =  dataService.list(paramsMap);
+		dataDOS.forEach(a->{
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			strings.add(simpleDateFormat.format(a.getAddTime()));
+		});
 		model.addAttribute("deviceDOS",deviceDOS);
+		model.addAttribute("strings",strings);
 		return "information/data/dis";
 	}
 

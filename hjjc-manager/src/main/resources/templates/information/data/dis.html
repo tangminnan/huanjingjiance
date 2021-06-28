@@ -63,9 +63,18 @@
                 </div>
 <div th:include="include :: footer"></div>
  <script th:inline="javascript">
+         let strings = [[${strings}]];
+         let mark={};
+         for(str of strings){
+             mark[str]=""
+         }
+         console.info("=================");
+         console.log(mark);
+         console.info("==================");
          laydate.render({
              elem: '#startTime',
              type: 'datetime',
+             mark: mark
          });
          laydate.render({
              elem: '#endTime',
